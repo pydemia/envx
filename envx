@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+PREFIX="__OLD_"
+SUFFIX="_BAK__"
+
+_envs="$(env)"
+# _envs=`env`
+
+# for variable in "${_envs[@]}"; do
+#     # printf 1
+#     printf $variable
+#     # printf "${variable}"
+#     # printf variable
+#     # printf "${PREFIX}${variable}${SUFFIX}"
+#     # printf "${PREFIX}${variable}${SUFFIX}"="${variable}"
+#     # export "${PREFIX}${variable}${SUFFIX}"="${variable}"
+# done
+
+for variable in $_envs; do
+    # echo "${PREFIX}$variable"
+    # echo "${PREFIX}${variable}${SUFFIX}"
+    IFS='='; arrIN=($variable);
+    # echo "${PREFIX}${arrIN[0]}${SUFFIX}"
+    # echo "${arrIN[1]}"
+    echo "${PREFIX}${arrIN[0]}${SUFFIX}=${arrIN[1]}"
+    # export "${PREFIX}${arrIN[1]}${SUFFIX}"="${arrIN[1:]}"
+    unset IFS;
+done
+# PREFIX="__OLD_"
+# SUFFIX="_BAK__"
+
+# __OLD_PATH="${PATH}"
+# PATH="${}"
+
+# string="hello-world"
+# prefix="hell"
+# suffix="ld"
+# prefix_removed_string=${string/#$prefix}
+# suffix_removed_String=${prefix_removed_string/%$suffix}
