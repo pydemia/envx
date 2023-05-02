@@ -1,0 +1,161 @@
+#/usr/bin/env sh
+
+# set -eo
+
+PREFIX="_OLD__"
+SUFFIX=""
+# SUFFIX="__BAK_"
+
+__OLD_ENVS="$(env)"
+
+# for variable in "${_envs[@]}"; do
+#     # printf 1
+#     printf $variable
+#     # printf "${variable}"
+#     # printf variable
+#     # printf "${PREFIX}${variable}${SUFFIX}"
+#     # printf "${PREFIX}${variable}${SUFFIX}"="${variable}"
+#     # export "${PREFIX}${variable}${SUFFIX}"="${variable}"
+# done
+
+function _test_activate() {
+    env | while IFS='=' read variable ; do
+        arrIN=($variable);
+        
+        var_name="${arrIN[0]}"
+        var_value="${arrIN[1]}"
+        echo "var_name: $var_name"
+        echo "var_value: $var_value"
+        echo "${PREFIX}${arrIN[0]}${SUFFIX}=${arrIN[1]}";
+    done
+    unset IFS;
+}
+
+function __activate () {
+    __OLD_ENVS="$(env)"
+    IFS='='
+    env | while read -r variable ; do
+        arrIN=($variable);
+        var_name="${arrIN[0]}"
+        var_value="${arrIN[1]}"
+
+        prefixed_var_name="${PREFIX}${var_name}"
+
+        # declare ${PREFIX}${var_name}="${var_value}"
+
+        echo "var_name: $var_name"
+        echo "var_value: $var_value"
+        echo "$prefixed_var_name"="$var_value"
+        # \local new_env
+        # new_env="export ${prefixed_var_name}"\=\""${var_value}\""
+        # echo "$new_env"
+        # eval "$new_env"
+
+        # local "${prefixed_var_name}"
+        # new_env="export ${prefixed_var_name}"\=\""${var_value}\""
+        # eval "$new_env"
+
+        eval "export ${prefixed_var_name}"\=\""${var_value}\""
+        # source <(echo "export ${prefixed_var_name}"\=\""${var_value}\"")
+
+        # eval "(export $prefixed_var_name=$var_value)"
+        # echo "${PREFIX}${var_name}=${var_value}";
+        # echo ${PREFIX}${var_name}
+        # echo ${var_value}
+
+        # \local ${PREFIX}${var_name}=${var_value}
+
+        # export "${PREFIX}${var_name}=${var_value}";
+        # \eval "export ${PREFIX}${var_name}=${var_value}";
+
+        # `export "${PREFIX}${var_name}=${var_value}"`;
+        # eval "export ${PREFIX}${var_name}=${var_value}";
+        # printf "${PREFIX}${var_name}=${var_value}";
+        # echo "${PREFIX}${var_name}=${var_value}";
+        # export "${PREFIX}${var_name}=${var_value}";
+        # declare -x "${PREFIX}${var_name}=${var_value}";
+        # echo "${PREFIX}${arrIN[0]}${SUFFIX}=${arrIN[1]}";
+    done
+    eval "export __OLD_ENVS=\"${PREFIX}__OLD_ENVS\""
+    unset IFS;
+}
+
+function test() {
+    eval "export __OLD_ENVS=\"oodd\""
+}
+
+function __deactivate () {
+    echo "${__OLD_ENVS}" | while read variable ; do
+        arrIN=($variable);
+        var_name="${arrIN[0]}"
+        var_value="${arrIN[1]}"
+
+        # printf "${${var_name#"$PREFIX"}%"$SUFFIX"}=${var_value}";
+        # echo "${${var_name#"$PREFIX"}%"$SUFFIX"}=${var_value}";
+        eval "export ${${var_name#"$PREFIX"}%"$SUFFIX"}=${var_value}";
+        # export "${${var_name#"$PREFIX"}%"$SUFFIX"}=${var_value}";
+        # declare -x "${${var_name#"$PREFIX"}%"$SUFFIX"}=${var_value}";
+        # export "${PREFIX}${arrIN[0]}=${arrIN[1]}";
+        unset var_name
+    done
+    unset __OLD_ENVS
+    unset IFS
+}
+
+
+# for variable in $_envs; do
+#     # echo "${PREFIX}$variable"
+#     # echo "${PREFIX}${variable}${SUFFIX}"
+#     IFS='='; arrIN=($variable);
+#     # echo "${PREFIX}${arrIN[0]}${SUFFIX}"
+#     # echo "${arrIN[1]}"
+#     echo "${PREFIX}${arrIN[0]}${SUFFIX}=${arrIN[1]}"
+#     # export "${PREFIX}${arrIN[1]}${SUFFIX}"="${arrIN[1:]}"
+#     unset IFS;
+# done
+# PREFIX="__OLD_"
+# SUFFIX="_BAK__"
+
+# __OLD_PATH="${PATH}"
+# PATH="${}"
+
+# string="hello-world"
+# prefix="hell"
+# suffix="ld"
+# prefix_removed_string=${string/#$prefix}
+# suffix_removed_String=${prefix_removed_string/%$suffix}
+
+# function envx() {
+#     \local cmd="${1-__missing__}"
+#     case "$cmd" in
+#         activate)
+#             __activate "$@"
+#             ;;
+#         deactivate)
+#             __deactivate "$@" || \return
+#             ;;
+#         *)
+#             __activate "$@"
+#             ;;
+#     esac
+# }
+
+# envx "$@"
+
+cmd="${1-__missing__}"
+case "$cmd" in
+    activate)
+        eval __activate "$@"
+        \export TETS="test"
+        ;;
+    deactivate)
+        eval __deactivate "$@" || \return
+        ;;
+    *)
+        __activate "$@"
+        ;;
+esac
+
+# "$@"
+
+# source <(curl http://example.com/file.cnfg)

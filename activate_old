@@ -1,0 +1,4 @@
+#!/bin/sh
+
+\. "./envx" || return $?
+envx activate "$@"

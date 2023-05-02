@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+# set -o pipefail
+
+_ENVX_PREFIX="_ENVX_BAK__"
+_ENVX_SUFFIX=""
+
+function _envx_activate () {
+    source_rcfile="$2"
+    _ENVX_OLD_ENVS="$(env)"
+    eval "export _ENVX_OLD_ENVS=\"$(env)\""
+
+    echo "$_ENVX_OLD_ENVS" | while IFS='=' read -r var_name var_value; do
+        # echo "var_name: $var_name"
+        # echo "var_value: $var_value"
+
+        backuped_var_name="${_ENVX_PREFIX}${var_name}${_ENVX_SUFFIX}"
+        # echo "backuped_var_name: $backuped_var_name"
+        eval "export ${backuped_var_name}"\=\""${var_value}\"";
+
+    done
+    unset IFS;
+
+    if [[ -n "$source_rcfile" ]] && [[ -e "$source_rcfile" ]]; then
+        echo "load from $source_rcfile"
+        eval "source $source_rcfile"
+    fi
+    
+}
+
+
+function _envx_deactivate () {
+    if [[ -n $_ENVX_OLD_ENVS ]]; then
+        echo "$_ENVX_OLD_ENVS" | while IFS='=' read -r var_name var_value; do
+
+            # restored_var_name="${${var_name#"$_ENVX_PREFIX"}%"$_ENVX_SUFFIX"}"
+            # echo "restored_var_name: $restored_var_name"
+            # eval "export ${restored_var_name}"\=\""${var_value}\"";
+            eval "export ${var_name}"\=\""${var_value}\"";
+
+            backuped_var_name="${_ENVX_PREFIX}${var_name}${_ENVX_SUFFIX}"
+            unset "$backuped_var_name"
+        done
+        unset IFS
+    fi
+    unset _ENVX_OLD_ENVS
+}
+
+
+# function envx() {
+#     cmd="${1-__missing__}"
+#     source_rcfile="${2}"
+#     case "$cmd" in
+#         turnon)
+#             _envx_activate "$@"
+#             # turnon "$@"
+#             ;;
+
+#         turnon)
+#             _envx_activate "$@"
+#             # turnon "$@"
+#             ;;
+
+#         turnoff)
+#             _envx_deactivate
+#             # turnoff
+#             ;;
+
+#         *)
+#             _envx_activate
+#             # turnon
+#             ;;
+#     esac
+# }
+
+# function envx() {
+#     cmd="${1-__missing__}"
+#     source_rcfile="${2}"
+#     case "$cmd" in
+#         turnon)
+#             _envx_activate "$@"
+#             # turnon "$@"
+#             ;;
+
+#         turnon)
+#             _envx_activate "$@"
+#             # turnon "$@"
+#             ;;
+
+#         turnoff)
+#             _envx_deactivate
+#             # turnoff
+#             ;;
+
+#         *)
+#             _envx_activate
+#             # turnon
+#             ;;
+#     esac
+# }
+
+
+# "$@"
+# envx "$@"

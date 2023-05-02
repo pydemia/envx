@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. "./envxrc"
+# \. "./envxrc" || return $?
+# _envx_deactivate
+_envx_deactivate
