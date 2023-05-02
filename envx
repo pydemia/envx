@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+# set -o pipefail
 
 _ENVX_PREFIX="_ENVX_BAK__"
 _ENVX_SUFFIX=""
@@ -17,17 +17,23 @@ function _envx_activate () {
     source_rcfile="$2"
     _OLD_ENVS="$(env)"
     if [[ -n $_ENVX_OLD_ENVS ]]; then
-        OLD_ENVS_VARNAME="${_ENVX_PREFIX}${DEFAULT_OLD_ENVS_VARNAME}${_ENVX_SUFFIX}"
-        echo "$OLD_ENVS_VARNAME"
-        # _ENVX_OLD_ENVS="${_ENVX_OLD_ENVS//\n/;}"
+        # OLD_ENVS_VARNAME="${_ENVX_PREFIX}${DEFAULT_OLD_ENVS_VARNAME}${_ENVX_SUFFIX}"
+        # echo "$OLD_ENVS_VARNAME"
+        # # _ENVX_OLD_ENVS="${_ENVX_OLD_ENVS//\n/;}"
+        # # echo "$_ENVX_OLD_ENVS"
+        # # echo "export ${OLD_ENVS_VARNAME}"\=\""${_ENVX_OLD_ENVS}\"";
+        # # eval "export ${OLD_ENVS_VARNAME}"\=\""${_ENVX_OLD_ENVS}\"";
+        # # "$OLD_ENVS_VARNAME"="$(echo "$_ENVX_OLD_ENVS")"
+        # # export "${OLD_ENVS_VARNAME}"="$(_envx_get_old_envs)"
+        # eval "export ${OLD_ENVS_VARNAME}=${_ENVX_OLD_ENVS}"
         # echo "$_ENVX_OLD_ENVS"
-        # echo "export ${OLD_ENVS_VARNAME}"\=\""${_ENVX_OLD_ENVS}\"";
-        # eval "export ${OLD_ENVS_VARNAME}"\=\""${_ENVX_OLD_ENVS}\"";
-        # "$OLD_ENVS_VARNAME"="$(echo "$_ENVX_OLD_ENVS")"
-        export "${OLD_ENVS_VARNAME}"="$(_envx_get_old_envs)"
-        # export "${OLD_ENVS_VARNAME}=\"$(echo \"$_ENVX_OLD_ENVS\")"
+        # # export "${OLD_ENVS_VARNAME}=\"$(echo \"$_ENVX_OLD_ENVS\")"
+
+        echo "ENVX is already on. stopping..."
+        return
+    else
+        eval "export ${DEFAULT_OLD_ENVS_VARNAME}"\=\""${_OLD_ENVS}\"";
     fi
-    eval "export ${DEFAULT_OLD_ENVS_VARNAME}"\=\""${_OLD_ENVS}\"";
 
     echo "$_ENVX_OLD_ENVS" | while IFS='=' read -r var_name var_value; do
         # echo "var_name: $var_name"
@@ -61,8 +67,12 @@ function _envx_deactivate () {
             unset "$backuped_var_name"
         done
         unset IFS
+        unset _ENVX_OLD_ENVS
+    else
+        echo "ENVX is not on. stopping..."
+        return
     fi
-    unset _ENVX_OLD_ENVS
+    
 }
 
 
